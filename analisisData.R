@@ -5,6 +5,7 @@ drivers <- read.csv(file="./drivers.csv",header=TRUE)
 standings <- read.csv(file="./driverStandings.csv",header=TRUE)
 results <- read.csv("results.csv")
 constructors <- read.csv("constructors.csv")
+pitStops <- read.csv("pitStops.csv")
 
 filter_winner <- (results$positionText=="1")
 winners <- results[filter_winner,]
@@ -35,5 +36,7 @@ colnames(win.percentage.by.constructor) <- c("Victorias","Apariciones_totales")
 
 win.percentage.by.constructor$percentage <- 100*(win.percentage.by.constructor$Victorias)/(win.percentage.by.constructor$Apariciones_totales)
 
+pitStopsDuration <- as.data.frame(pitStops$duration)
 
+pitStopsDurationMean <- mean(as.numeric(pitStopsDuration$`pitStops$duration`))
 
