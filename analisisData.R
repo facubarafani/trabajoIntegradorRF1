@@ -1,5 +1,6 @@
 library(ggplot2)
 library(dplyr)
+library(jpeg)
 
 #Se importan las diferentes tablas de la DB utilizada
 circuits <- read.csv(file="./circuits.csv",header=TRUE)
@@ -9,6 +10,20 @@ results <- read.csv("results.csv")
 constructors <- read.csv("constructors.csv")
 pitStops <- read.csv("pitStops.csv")
 races <- read.csv("races.csv")
+
+#Se importan las banderas para implementar en el grafico
+
+arg <- readJPEG("./banderas/argentina.jpg")
+ger <- readJPEG("./banderas/germany.jpg")
+grb <- readJPEG("./banderas/uk.jpg")
+ast <- readJPEG("./banderas/austria.jpg")
+aus <- readJPEG("./banderas/australia.jpg")
+bra <- readJPEG("./banderas/brazil.jpg")
+fin <- readJPEG("./banderas/finland.jpg")
+spa <- readJPEG("./banderas/spain.jpg")
+fra <- readJPEG("./banderas/france.jpg")
+ita <- readJPEG("./banderas/italy.jpg")
+usa <- readJPEG("./banderas/usa.jpg")
 
 #Filtramos a los ganadores de cada carrera buscando unicamente los que hayan obtenido la posicion 1
 filter_winner <- (results$positionText=="1")
@@ -66,6 +81,26 @@ colnames(win.percentage.by.nationality) <- c("Victorias","Apariciones_totales")
 
 #Calculamos el porcentaje de victorias segun la nacionalidad
 win.percentage.by.nationality$Porcentaje <- 100*(win.percentage.by.nationality$Victorias)/(win.percentage.by.nationality$Apariciones_totales)
+
+#Reducimos la tabla a los 10 primero (unicamente p/ cantidad de victorias)
+top.nationalities.qty <-win.percentage.by.nationality[order(win.percentage.by.nationality$Victorias,decreasing = T),]
+top.nationalities.qty$Nacionalidad <- rownames(top.nationalities.qty)
+top.nationalities.qty <- head(top.nationalities.qty,10)
+
+top_nationality_plot <- ggplot(data=top.nationalities.qty, aes(x=reorder(Nacionalidad,-Victorias), y=Victorias))
+top_nationality_plot <- top_nationality_plot + geom_bar(stat="identity", fill="#8cd98c", color="Black") + xlab("Nacionalidad") + ylab("Victorias totales") + ggtitle("Cantidad de victorias por nacionalidad") +
+  ylim(0,300) + theme(axis.text.x = element_text(angle=90,hjust=1,vjust=0.25), plot.title = element_text(hjust=0.5)) 
+
+top_nationality_plot + annotation_raster(grb, ymin = 269,ymax=299,xmin=0.5,xmax=1.5) +
+  annotation_raster(ger, ymin = 180,ymax=210,xmin=1.6,xmax=2.4) +
+  annotation_raster(bra, ymin = 109,ymax=139,xmin=2.6,xmax=3.4) +
+  annotation_raster(fra, ymin = 87,ymax=117,xmin=3.6,xmax=4.4) +
+  annotation_raster(fin, ymin = 57,ymax=87,xmin=4.6,xmax=5.4) +
+  annotation_raster(ita, ymin = 53,ymax=83,xmin=5.6,xmax=6.4) +
+  annotation_raster(ast, ymin = 49,ymax=79,xmin=6.6,xmax=7.4) +
+  annotation_raster(aus, ymin = 48,ymax=78,xmin=7.6,xmax=8.4) +
+  annotation_raster(arg, ymin = 46,ymax=76,xmin=8.6,xmax=9.4) +
+  annotation_raster(usa, ymin = 41,ymax=71,xmin=9.6,xmax=10.4)
 
 #Reducimos la tabla a los 10 primeros
 top.nationalities <- win.percentage.by.nationality[order(win.percentage.by.nationality$Porcentaje,decreasing = T),]
