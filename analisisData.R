@@ -87,9 +87,13 @@ top.nationalities.qty <-win.percentage.by.nationality[order(win.percentage.by.na
 top.nationalities.qty$Nacionalidad <- rownames(top.nationalities.qty)
 top.nationalities.qty <- head(top.nationalities.qty,10)
 
+#Creamos el grafico de barras mostrando la cantidad de victorias por nacionalidad
+
 top_nationality_plot <- ggplot(data=top.nationalities.qty, aes(x=reorder(Nacionalidad,-Victorias), y=Victorias))
 top_nationality_plot <- top_nationality_plot + geom_bar(stat="identity", fill="#8cd98c", color="Black") + xlab("Nacionalidad") + ylab("Victorias totales") + ggtitle("Cantidad de victorias por nacionalidad") +
   ylim(0,300) + theme(axis.text.x = element_text(angle=90,hjust=1,vjust=0.25), plot.title = element_text(hjust=0.5)) 
+
+#Asignamos a cada grafico la bandera segun la nacionalidad
 
 top_nationality_plot + annotation_raster(grb, ymin = 269,ymax=299,xmin=0.5,xmax=1.5) +
   annotation_raster(ger, ymin = 180,ymax=210,xmin=1.6,xmax=2.4) +
@@ -101,6 +105,22 @@ top_nationality_plot + annotation_raster(grb, ymin = 269,ymax=299,xmin=0.5,xmax=
   annotation_raster(aus, ymin = 48,ymax=78,xmin=7.6,xmax=8.4) +
   annotation_raster(arg, ymin = 46,ymax=76,xmin=8.6,xmax=9.4) +
   annotation_raster(usa, ymin = 41,ymax=71,xmin=9.6,xmax=10.4)
+
+#Establecemos los datos con los que se va a crear el grafico de los mejores corredores de la f1
+topDriversPlot <- ggplot(data=top.drivers, aes(x=reorder(surname,-Victorias), y=Victorias))
+
+#Establecemos los colores que tendran las diferentes barras del grafico
+bar.colors <- c("Gold", "Gray", "#B35900", "#006699", "#006699", "#006699", "#006699", "#006699", "#006699", "#006699"
+)
+#Creamos el grafico del top 10 fcorredores de la f1
+topDriversPlot + geom_bar(stat="identity", fill=bar.colors, color="Black",alpha=0.75) + xlab("") +
+  ylab("Cantidad total de victorias") + ggtitle("Top 10 corredores de la F1") +
+  scale_x_discrete(labels=c("Schumacher", "Hamilton", "Prost", 
+                            "Vettel", "Senna", "Hill",
+                            "Alonso", "Mansell",
+                            "Rosberg", "Stewart")) +
+  theme(axis.text.x = element_text(angle=90,hjust=1,vjust=0.25), 
+        plot.title = element_text(hjust=0.5))
 
 #Reducimos la tabla a los 10 primeros
 top.nationalities <- win.percentage.by.nationality[order(win.percentage.by.nationality$Porcentaje,decreasing = T),]
@@ -122,6 +142,13 @@ races.by.constructorWinners <- as.data.frame(summary(races.by.constructor$name,1
 colnames(wins.by.winners) <- c("Victorias")
 colnames(wins.by.constructor) <- c("Victorias")
 colnames(wins.by.nationality) <- c("Victorias")
+
+#Top drivers
+wins.by.winners$surname <- rownames(wins.by.winners)
+#Ordenamos a los corredores por cantidad de victorias
+top.drivers <- wins.by.winners[order(wins.by.winners$Victorias,decreasing = T),]
+#Acortamos la tabla a los 10 primeros
+top.drivers <- head(top.drivers,10)
 
 #Calculamos el porcentaje de victorias p/ fabricante
 win.percentage.by.constructor <- as.data.frame(data.frame(wins.by.constructor,races.by.constructorWinners))
